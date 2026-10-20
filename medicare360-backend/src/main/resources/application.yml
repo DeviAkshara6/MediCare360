@@ -15,3 +15,7 @@ server:
 app:
   cors:
     allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+
+logging:
+  level:
+    org.springframework.web: DEBUG
