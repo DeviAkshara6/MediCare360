@@ -3,10 +3,12 @@ package com.medicare360.model;
 import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document("labRecords")
 public class LabRecord {
     @Id private String id;
+    private String ownerId;
     @NotBlank private String testName;
     @NotBlank private String labName;
     @NotBlank private String testDate;
@@ -19,6 +21,9 @@ public class LabRecord {
     public LabRecord() {}
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getOwnerId() { return ownerId; }
+    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
     public String getTestName() { return testName; }
     public void setTestName(String testName) { this.testName = testName; }
     public String getLabName() { return labName; }

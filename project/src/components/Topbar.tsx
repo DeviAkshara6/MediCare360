@@ -6,9 +6,11 @@ interface TopbarProps {
   current: ViewKey;
   onOpenSidebar: () => void;
   onQuickAdd: () => void;
+  userName: string;
+  onLogout: () => void;
 }
 
-export default function Topbar({ current, onOpenSidebar, onQuickAdd }: TopbarProps) {
+export default function Topbar({ current, onOpenSidebar, onQuickAdd, userName, onLogout }: TopbarProps) {
   const item = NAV_ITEMS.find((n) => n.key === current);
   const today = new Date().toLocaleDateString('en-US', {
     weekday: 'long',
@@ -46,9 +48,8 @@ export default function Topbar({ current, onOpenSidebar, onQuickAdd }: TopbarPro
           <button onClick={onQuickAdd} className="btn-primary sm:hidden" aria-label="Quick add">
             <Plus size={18} />
           </button>
-          <div className="hidden h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-brand-600 text-sm font-bold text-white sm:flex">
-            U
-          </div>
+          <span className="hidden max-w-32 truncate text-sm font-medium text-slate-600 sm:inline">{userName}</span>
+          <button onClick={onLogout} className="rounded-lg px-2.5 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800">Log out</button>
         </div>
       </div>
     </header>

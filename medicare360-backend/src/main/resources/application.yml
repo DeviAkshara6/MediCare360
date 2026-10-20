@@ -4,6 +4,7 @@ spring:
   data:
     mongodb:
       uri: ${MONGODB_URI:mongodb://localhost:27017/medicare360}
+      auto-index-creation: true
   servlet:
     multipart:
       max-file-size: 10MB
@@ -15,6 +16,9 @@ server:
 app:
   cors:
     allowed-origins: ${FRONTEND_URL:http://localhost:5173}
+  jwt:
+    secret: ${JWT_SECRET}
+    expiration: ${JWT_EXPIRATION:PT2H}
 
 logging:
   level:

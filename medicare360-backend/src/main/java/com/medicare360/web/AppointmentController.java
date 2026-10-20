@@ -5,6 +5,8 @@ import com.medicare360.service.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import com.medicare360.security.AuthUser;
 import java.util.List;
 
 @RestController
@@ -12,8 +14,8 @@ import java.util.List;
 public class AppointmentController {
     private final AppointmentService service;
     public AppointmentController(AppointmentService service) { this.service = service; }
-    @GetMapping public List<Appointment> all() { return service.findAll(); }
-    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Appointment create(@Valid @RequestBody Appointment appointment) { return service.save(appointment); }
-    @PutMapping("/{id}") public Appointment update(@PathVariable String id, @Valid @RequestBody Appointment appointment) { appointment.setId(id); return service.save(appointment); }
-    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) public void delete(@PathVariable String id) { service.delete(id); }
+    @GetMapping public List<Appointment> all(@AuthenticationPrincipal AuthUser user) { return service.findAll(user.id()); }
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Appointment create(@Valid @RequestBody Appointment appointment, @AuthenticationPrincipal AuthUser user) { return service.create(appointment, user.id()); }
+    @PutMapping("/{id}") public Appointment update(@PathVariable String id, @Valid @RequestBody Appointment appointment, @AuthenticationPrincipal AuthUser user) { return service.update(id, appointment, user.id()); }
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) public void delete(@PathVariable String id, @AuthenticationPrincipal AuthUser user) { service.delete(id, user.id()); }
 }

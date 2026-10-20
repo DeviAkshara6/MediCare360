@@ -4,11 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Document("medicines")
 public class Medicine {
     @Id
     private String id;
+    private String ownerId;
     @NotBlank private String name;
     @NotBlank private String dosage;
     private String instructions;
@@ -21,6 +23,9 @@ public class Medicine {
     public Medicine() {}
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getOwnerId() { return ownerId; }
+    public void setOwnerId(String ownerId) { this.ownerId = ownerId; }
     public String getName() { return name; }
     public void setName(String name) { this.name = name; }
     public String getDosage() { return dosage; }

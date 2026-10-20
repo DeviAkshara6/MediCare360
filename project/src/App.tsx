@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Pill, CalendarDays, FlaskConical, ArrowRight } from 'lucide-react';
 import type { AppData, Medicine, Appointment, LabRecord, DoseStatus, AppointmentStatus } from '@/types';
-import { api } from '@/lib/api';
+import AuthPage from '@/components/AuthPage';
+import { api, getAuthUser, type AuthUser } from '@/lib/api';
 import Sidebar, { NAV_ITEMS } from '@/components/Sidebar';
 import type { ViewKey } from '@/components/Sidebar';
 import Topbar from '@/components/Topbar';
@@ -15,12 +16,23 @@ import LabsView from '@/views/labs/LabsView';
 function App() {
   return (
     <ToastProvider>
-      <AppShell />
+      <AuthenticatedApp />
     </ToastProvider>
   );
 }
 
-function AppShell() {
+function AuthenticatedApp() {
+  const [user, setUser] = useState<AuthUser | null>(() => getAuthUser());
+  useEffect(() => {
+    const expire = () => setUser(null);
+    window.addEventListener('medicare360:auth-expired', expire);
+    return () => window.removeEventListener('medicare360:auth-expired', expire);
+  }, []);
+  if (!user) return <AuthPage onAuthenticated={() => setUser(getAuthUser())} />;
+  return <AppShell user={user} onLogout={() => { api.logout(); setUser(null); }} />;
+}
+
+function AppShell({ user, onLogout }: { user: AuthUser; onLogout: () => void }) {
   const [data, setData] = useState<AppData>({ medicines: [], appointments: [], labRecords: [], seeded: true });
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState('');
@@ -119,7 +131,13 @@ function AppShell() {
       />
 
       <div className="lg:pl-72">
-        <Topbar current={view} onOpenSidebar={() => setSidebarOpen(true)} onQuickAdd={openQuickAddFromTopbar} />
+        <Topbar
+          current={view}
+          onOpenSidebar={() => setSidebarOpen(true)}
+          onQuickAdd={openQuickAddFromTopbar}
+          userName={user.fullName}
+          onLogout={onLogout}
+        />
 
         <main className="mx-auto w-full max-w-6xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <div key={view} className="animate-fade-in">
