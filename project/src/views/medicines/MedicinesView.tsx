@@ -21,10 +21,10 @@ import { formatDate, formatTime, isDateInRange, todayISO } from '@/lib/dates';
 
 interface MedicinesViewProps {
   medicines: Medicine[];
-  onAdd: (medicine: Medicine) => void;
-  onUpdate: (medicine: Medicine) => void;
-  onDelete: (id: string) => void;
-  onStatusChange: (id: string, status: DoseStatus) => void;
+  onAdd: (medicine: Medicine) => Promise<void>;
+  onUpdate: (medicine: Medicine) => Promise<void>;
+  onDelete: (id: string) => Promise<void>;
+  onStatusChange: (id: string, status: DoseStatus) => Promise<void>;
   openAddOnMount?: boolean;
 }
 
@@ -73,16 +73,21 @@ export default function MedicinesView({
     setModalOpen(true);
   };
 
-  const handleSubmit = (m: Medicine) => {
-    if (editing) {
-      onUpdate(m);
-      notify('Medicine updated successfully.');
-    } else {
-      onAdd(m);
-      notify('Medicine reminder added.');
+  const handleSubmit = async (m: Medicine) => {
+    try {
+      if (editing) {
+        await onUpdate(m);
+        notify('Medicine updated successfully.');
+      } else {
+        await onAdd(m);
+        notify('Medicine reminder added.');
+      }
+      setModalOpen(false);
+      setEditing(null);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Could not save the medicine.';
+      notify(message, 'error');
     }
-    setModalOpen(false);
-    setEditing(null);
   };
 
   const confirmDelete = () => {
